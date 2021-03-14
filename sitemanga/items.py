@@ -6,7 +6,14 @@
 import scrapy
 
 
-class SitemangaItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class MangaItem(scrapy.Item):
+    title = scrapy.Field()
+    cover = scrapy.Field()
+    
+
+class ChapterItem(scrapy.Item):
+    manga = scrapy.Field()
+    number = scrapy.Field()
+    url = scrapy.Field()
+    date = scrapy.Field()
+    title = scrapy.Field()

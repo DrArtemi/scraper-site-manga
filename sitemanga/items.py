@@ -7,12 +7,17 @@ import scrapy
 
 
 class MangaItem(scrapy.Item):
+    # Infos
     title = scrapy.Field()
-    cover = scrapy.Field()
+    team = scrapy.Field()
+    # Cover
+    image_urls = scrapy.Field()
+    images = scrapy.Field()
     
 
 class ChapterItem(scrapy.Item):
     manga = scrapy.Field()
+    team = scrapy.Field()
     number = scrapy.Field()
     url = scrapy.Field()
     date = scrapy.Field()

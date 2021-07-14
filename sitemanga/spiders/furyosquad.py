@@ -1,3 +1,4 @@
+from time import sleep
 from sitemanga.items import ChapterItem, MangaItem
 import scrapy
 import dateparser
@@ -5,6 +6,8 @@ import dateparser
 
 class FuryosquadSpider(scrapy.Spider):
     name = "furyosquad"
+    team_name = "FuryoSquad"
+
 
     def start_requests(self):
         urls = [
@@ -20,6 +23,7 @@ class FuryosquadSpider(scrapy.Spider):
         
         for link in mangas_links:
             yield scrapy.Request(url=link, callback=self.parse_manga)
+            break
     
     def parse_manga(self, response):
         print(f'Parsing manga at {response.url}')
@@ -30,14 +34,15 @@ class FuryosquadSpider(scrapy.Spider):
         
         yield MangaItem(
             title=manga_infos['title'],
-            cover=manga_infos['cover']
+            team=self.team_name,
+            image_urls=[manga_infos['cover']]
         )
                 
         # Chapters
-        chapters_number = response.css('.fs-chapter-list .element .title a::text').getall()
-        chapters_url = response.css('.fs-chapter-list .element .title a::attr(href)').getall()
-        chapters_title = response.css('.fs-chapter-list .element .name::text').getall()
-        chapters_date = response.css('.fs-chapter-list .element .meta_r::text').getall()
+        chapters_number = response.css('.fs-chapter-list .element.desktop .title a::text').getall()
+        chapters_url = response.css('.fs-chapter-list .element.desktop .title a::attr(href)').getall()
+        chapters_title = response.css('.fs-chapter-list .element.desktop .name::text').getall()
+        chapters_date = response.css('.fs-chapter-list .element.desktop .meta_r::text').getall()
         
         for i, ch in enumerate(chapters_number):
             splitted = ch.split(' ')
@@ -53,9 +58,11 @@ class FuryosquadSpider(scrapy.Spider):
         for info in manga_infos['chapters']:
             yield ChapterItem(
                 manga=manga_infos['title'],
+                team=self.team_name,
                 number=info['number'],
                 url=info['url'],
-                date=info['title'],
-                title=info['date'],
+                date=info['date'],
+                title=info['title'],
             )
-            
+                
+        

@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 
 class ScantradSpider(scrapy.Spider):
     name = "scantrad"
+    team_name = "Scantrad France"
     base_url = "https://scantrad.net/"
     
     def start_requests(self):
@@ -35,7 +36,8 @@ class ScantradSpider(scrapy.Spider):
         
         yield MangaItem(
             title=manga_infos['title'],
-            cover=manga_infos['cover']
+            cover=manga_infos['cover'],
+            team_name=self.team_name
         )
         
         chapters = response.css('.chapitre')
@@ -53,6 +55,6 @@ class ScantradSpider(scrapy.Spider):
                 manga=manga_infos['title'],
                 number=info['number'],
                 url=info['url'],
-                date=info['title'],
-                title=info['date'],
+                date=info['date'],
+                title=info['title'],
             )

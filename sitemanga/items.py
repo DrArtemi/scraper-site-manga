@@ -5,20 +5,16 @@
 
 import scrapy
 
-
-class MangaItem(scrapy.Item):
-    # Infos
-    title = scrapy.Field()
-    team = scrapy.Field()
-    # Cover
+class ChapterItem(scrapy.Item):
+    # Manga infos
+    manga_title = scrapy.Field()
+    manga_team = scrapy.Field()
+    # Manga cover
     image_urls = scrapy.Field()
     images = scrapy.Field()
     
-
-class ChapterItem(scrapy.Item):
-    manga = scrapy.Field()
-    team = scrapy.Field()
-    number = scrapy.Field()
-    url = scrapy.Field()
-    date = scrapy.Field()
-    title = scrapy.Field()
+    # Chapter infos
+    chapter_number = scrapy.Field()
+    chapter_url = scrapy.Field()
+    chapter_date = scrapy.Field()
+    chapter_title = scrapy.Field()

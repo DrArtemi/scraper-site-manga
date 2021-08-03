@@ -1,5 +1,5 @@
 from time import sleep
-from sitemanga.items import ChapterItem, MangaItem
+from sitemanga.items import ChapterItem
 import scrapy
 import dateparser
 
@@ -23,7 +23,6 @@ class FuryosquadSpider(scrapy.Spider):
         
         for link in mangas_links:
             yield scrapy.Request(url=link, callback=self.parse_manga)
-            break
     
     def parse_manga(self, response):
         print(f'Parsing manga at {response.url}')
@@ -31,12 +30,6 @@ class FuryosquadSpider(scrapy.Spider):
         
         manga_infos['title'] = response.css('.fs-comic-title::text').get()
         manga_infos['cover'] = response.css('.comic-cover::attr(src)').get()
-        
-        yield MangaItem(
-            title=manga_infos['title'],
-            team=self.team_name,
-            image_urls=[manga_infos['cover']]
-        )
                 
         # Chapters
         chapters_number = response.css('.fs-chapter-list .element.desktop .title a::text').getall()
@@ -55,14 +48,13 @@ class FuryosquadSpider(scrapy.Spider):
                 'date': dateparser.parse(chapters_date[i])
             } for i in range(len(chapters_number))]
         
-        for info in manga_infos['chapters']:
+        for i, info in enumerate(manga_infos['chapters']):
             yield ChapterItem(
-                manga=manga_infos['title'],
-                team=self.team_name,
-                number=info['number'],
-                url=info['url'],
-                date=info['date'],
-                title=info['title'],
+                manga_title=manga_infos['title'],
+                manga_team=self.team_name,
+                image_urls=[manga_infos['cover']],
+                chapter_number=info['number'],
+                chapter_url=info['url'],
+                chapter_date=info['date'],
+                chapter_title=info['title'],
             )
-                
-        

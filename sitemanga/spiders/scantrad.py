@@ -1,4 +1,4 @@
-from sitemanga.items import ChapterItem, MangaItem
+from sitemanga.items import ChapterItem
 import scrapy
 import dateparser
 from urllib.parse import urljoin
@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 
 class ScantradSpider(scrapy.Spider):
     name = "scantrad"
+    team_name = "Scantrad France"
     base_url = "https://scantrad.net/"
     
     def start_requests(self):
@@ -32,12 +33,7 @@ class ScantradSpider(scrapy.Spider):
         
         manga_infos['title'] = response.css('.mf-info .titre::text').get()
         manga_infos['cover'] = response.css('.poster img::attr(src)').get()
-        
-        yield MangaItem(
-            title=manga_infos['title'],
-            cover=manga_infos['cover']
-        )
-        
+                
         chapters = response.css('.chapitre')
         real_chapters = [ch for ch in chapters if len(ch.css('.chl-num')) > 0]
     
@@ -53,6 +49,6 @@ class ScantradSpider(scrapy.Spider):
                 manga=manga_infos['title'],
                 number=info['number'],
                 url=info['url'],
-                date=info['title'],
-                title=info['date'],
+                date=info['date'],
+                title=info['title'],
             )

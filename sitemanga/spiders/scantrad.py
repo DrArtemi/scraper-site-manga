@@ -20,7 +20,7 @@ class ScantradSpider(scrapy.Spider):
     def parse_main_page(self, response):
         print(f'Parsing mangas list at {response.url}')
         
-        mangas_urls = response.css('a.home-manga::attr(href)').getall()
+        mangas_urls = response.css('div.manga .manga_right a::attr(href)').getall()
         for i in range(len(mangas_urls)):
             mangas_urls[i] = urljoin(self.base_url, mangas_urls[i])
         
@@ -31,24 +31,26 @@ class ScantradSpider(scrapy.Spider):
         print(f'Parsing manga at {response.url}')
         manga_infos = {}
         
-        manga_infos['title'] = response.css('.mf-info .titre::text').get()
-        manga_infos['cover'] = response.css('.poster img::attr(src)').get()
+        manga_infos['title'] = response.css('.info .titre::text').get()
+        manga_infos['cover'] = response.css('.ctt-img img::attr(src)').get()
                 
         chapters = response.css('.chapitre')
-        real_chapters = [ch for ch in chapters if len(ch.css('.chl-num')) > 0]
+        # real_chapters = [ch for ch in chapters if len(ch.css('.chl-num')) > 0]
     
         manga_infos['chapters'] = [{
-                'number': ch.css('span.chl-num::text').get().replace('#', ''),
-                'url': urljoin(self.base_url, ch.css('a.chr-button::attr(href)').get()),
+                'number': ch.css('span.chl-num::text').get().split(' ')[1],
+                'url': urljoin(self.base_url, ch.css('a.hm-link::attr(href)').get()),
                 'title': ch.css('span.chl-titre::text').get(),
                 'date': dateparser.parse(ch.css('div.chl-date::text').get())
-            } for ch in real_chapters]
+            } for ch in chapters]
         
         for info in manga_infos['chapters']:
             yield ChapterItem(
-                manga=manga_infos['title'],
-                number=info['number'],
-                url=info['url'],
-                date=info['date'],
-                title=info['title'],
+                manga_title=manga_infos['title'],
+                manga_team=self.team_name,
+                image_urls=[manga_infos['cover']],
+                chapter_number=info['number'],
+                chapter_url=info['url'],
+                chapter_date=info['date'],
+                chapter_title=info['title'],
             )

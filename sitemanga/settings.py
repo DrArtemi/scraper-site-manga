@@ -92,4 +92,5 @@ ITEM_PIPELINES = {
 IMAGES_STORE = '/home/adrien/manga_covers/'
 
 # SQLITE
-CONNECTION_STRING='sqlite:///scrapy_mangas.sqlite3'
+# CONNECTION_STRING='sqlite:////home/adrien/Repositories/Perso/scraper-site-manga/scrapy_mangas.sqlite3'
+CONNECTION_STRING='sqlite:////home/adrien/manga_dbs/site_manga.db'

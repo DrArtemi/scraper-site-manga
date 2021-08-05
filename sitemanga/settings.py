@@ -87,10 +87,3 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-
-# IMAGES
-IMAGES_STORE = '/home/adrien/manga_covers/'
-
-# SQLITE
-# CONNECTION_STRING='sqlite:////home/adrien/Repositories/Perso/scraper-site-manga/scrapy_mangas.sqlite3'
-CONNECTION_STRING=''

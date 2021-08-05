@@ -7,6 +7,12 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+# import local_settings if they exist
+try:
+    from local_settings import *
+except ImportError:
+    pass
+
 BOT_NAME = 'sitemanga'
 
 SPIDER_MODULES = ['sitemanga.spiders']

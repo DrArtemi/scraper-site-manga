@@ -23,7 +23,7 @@ def create_table(engine):
 
 
 class Manga(Base):
-    __tablename__ = "mangas"
+    __tablename__ = "Mangas"
 
     id = Column(Integer, primary_key=True)
     title = Column('title', String(50), unique=True)
@@ -34,7 +34,7 @@ class Manga(Base):
 
 
 class Chapter(Base):
-    __tablename__ = "chapters"
+    __tablename__ = "Chapters"
 
     id = Column(Integer, primary_key=True)
     number = Column('number', String(50))

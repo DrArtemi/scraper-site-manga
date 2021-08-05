@@ -9,13 +9,13 @@ from scrapy.utils.project import get_project_settings
 Base = declarative_base()
 
 
-def db_connect():
+def db_connect(connection_string):
     """
     Performs database connection using database settings from settings.py.
     Returns sqlalchemy engine instance
     """
-    print(get_project_settings().get("CONNECTION_STRING"))
-    return create_engine(get_project_settings().get("CONNECTION_STRING"))
+    print(connection_string)
+    return create_engine(connection_string)
 
 
 def create_table(engine):

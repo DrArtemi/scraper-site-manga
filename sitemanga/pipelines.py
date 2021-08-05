@@ -13,15 +13,22 @@ from itemadapter import ItemAdapter
         
 
 class StorePipeline(object):
-    def __init__(self):
+    def __init__(self, connection_string):
         """
         Initializes database connection and sessionmaker
         Creates tables
         """
-        engine = db_connect()
+        engine = db_connect(connection_string)
         create_table(engine)
         self.Session = sessionmaker(bind=engine)
-    
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        settings = crawler.settings
+        connection_string = settings.get("CONNECTION_STRING")
+        return cls(connection_string)
+
+
     def process_item(self, item, spider):
         """Save quotes in the database
         This method is called for every item pipeline component

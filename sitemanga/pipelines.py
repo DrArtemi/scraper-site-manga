@@ -37,12 +37,12 @@ class StorePipeline(object):
         
         session = self.Session()
         
-        manga = Manga()
-        chapter = Chapter()
-        
         # Check whether the manga exists
         exist_manga = session.query(Manga).filter_by(title=item_dict['manga_title'], team=item_dict['manga_team']).first()
         exist_chapter = session.query(Chapter).filter_by(url=item_dict['chapter_url']).first()
+        
+        manga = exist_manga if exist_manga is not None else Manga()
+        chapter = exist_chapter if exist_chapter is not None else Chapter()
         
         # Manga infos
         manga.title = item_dict['manga_title']
@@ -53,7 +53,7 @@ class StorePipeline(object):
         manga.cover_path = item_dict['images'][0]['path'] if len(item_dict['images']) > 0 else ''
         manga.cover_url = item_dict['images'][0]['url'] if len(item_dict['images']) > 0 else ''
         
-        chapter.manga = exist_manga if exist_manga is not None else manga
+        chapter.manga = manga
         
         # Chapter infos
         chapter.number = item_dict['chapter_number']
@@ -61,17 +61,13 @@ class StorePipeline(object):
         chapter.date = item_dict['chapter_date']
         chapter.title = item_dict['chapter_title']
                 
-        if exist_chapter is None:
-            try:
-                session.add(chapter)
-                session.commit()
-            except:
-                session.rollback()
-                raise
-            finally:
-                session.close()
-        else:
+        try:
+            session.add(chapter)
+            session.commit()
+        except:
             session.rollback()
+            raise
+        finally:
             session.close()
-            
+                        
         return item

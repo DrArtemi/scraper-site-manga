@@ -47,6 +47,7 @@ class StorePipeline(object):
         # Manga infos
         manga.title = item_dict['manga_title']
         manga.team = item_dict['manga_team']
+        manga.url = item_dict['manga_url']
         
         manga.cover_checksum = item_dict['images'][0]['checksum'] if len(item_dict['images']) > 0 else ''
         manga.cover_path = item_dict['images'][0]['path'] if len(item_dict['images']) > 0 else ''

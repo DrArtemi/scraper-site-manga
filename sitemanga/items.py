@@ -9,6 +9,7 @@ class ChapterItem(scrapy.Item):
     # Manga infos
     manga_title = scrapy.Field()
     manga_team = scrapy.Field()
+    manga_url = scrapy.Field()
     # Manga cover
     image_urls = scrapy.Field()
     images = scrapy.Field()

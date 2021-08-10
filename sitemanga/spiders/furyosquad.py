@@ -52,6 +52,7 @@ class FuryosquadSpider(scrapy.Spider):
             yield ChapterItem(
                 manga_title=manga_infos['title'],
                 manga_team=self.team_name,
+                manga_url=response.url,
                 image_urls=[manga_infos['cover']],
                 chapter_number=info['number'],
                 chapter_url=info['url'],

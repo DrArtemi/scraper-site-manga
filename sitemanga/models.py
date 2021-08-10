@@ -28,6 +28,7 @@ class Manga(Base):
     id = Column(Integer, primary_key=True)
     title = Column('title', String(50), unique=True)
     team = Column('team', String(50))
+    url = Column('url', String(150))
     cover_checksum = Column('cover_checksum', String(150))
     cover_path = Column('cover_path', String(150))
     cover_url = Column('cover_url', String(150))

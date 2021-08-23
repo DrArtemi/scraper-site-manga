@@ -38,7 +38,7 @@ class Chapter(Base):
     __tablename__ = "chapters"
 
     id = Column(Integer, primary_key=True)
-    number = Column('number', String(50))
+    number = Column('number', Integer)
     title = Column('title', String(150))
     url = Column('url', String(150))
     date = Column('date', DateTime)

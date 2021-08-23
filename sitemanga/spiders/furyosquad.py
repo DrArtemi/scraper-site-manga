@@ -1,3 +1,4 @@
+from sitemanga.spiders.utils import equalize_similar_dates
 from time import sleep
 from sitemanga.items import ChapterItem
 import scrapy
@@ -48,13 +49,16 @@ class FuryosquadSpider(scrapy.Spider):
                 'date': dateparser.parse(chapters_date[i])
             } for i in range(len(chapters_number))]
         
+        # Needed if date is similar to put chapters in the right order.
+        manga_infos['chapters'] = equalize_similar_dates(manga_infos['chapters'], threshold=1)
+        
         for i, info in enumerate(manga_infos['chapters']):
             yield ChapterItem(
                 manga_title=manga_infos['title'],
                 manga_team=self.team_name,
                 manga_url=response.url,
                 image_urls=[manga_infos['cover']],
-                chapter_number=info['number'],
+                chapter_number=int(info['number']),
                 chapter_url=info['url'],
                 chapter_date=info['date'],
                 chapter_title=info['title'],

@@ -5,6 +5,7 @@
 
 from sqlalchemy.orm import sessionmaker
 from scrapy.exceptions import DropItem
+from sqlalchemy.sql.functions import func
 from sitemanga.models import Manga, Chapter, db_connect, create_table
 
 
@@ -38,28 +39,43 @@ class StorePipeline(object):
         session = self.Session()
         
         # Check whether the manga exists
-        exist_manga = session.query(Manga).filter_by(title=item_dict['manga_title'], team=item_dict['manga_team']).first()
-        exist_chapter = session.query(Chapter).filter_by(url=item_dict['chapter_url']).first()
+        exist_manga = session.query(Manga).filter(
+            func.lower(Manga.title) == func.lower(item_dict['manga_title'])
+        ).first()
+        exist_chapter = session.query(Chapter).filter_by(
+            manga_id=exist_manga.id if exist_manga is not None else 0,
+            number=item_dict['chapter_number']
+        ).first()
         
         manga = exist_manga if exist_manga is not None else Manga()
         chapter = exist_chapter if exist_chapter is not None else Chapter()
         
         # Manga infos
-        manga.title = item_dict['manga_title']
-        manga.team = item_dict['manga_team']
-        manga.url = item_dict['manga_url']
+        if exist_manga is not None:
+            if item_dict['manga_team'] not in manga.team:
+                manga.team += ';' + item_dict['manga_team']
+            if item_dict['manga_url'] not in manga.url:
+                manga.url += ';' + item_dict['manga_url']
+        else:
+            manga.title = item_dict['manga_title']
+            manga.team = item_dict['manga_team']
+            manga.url = item_dict['manga_url']
         
-        manga.cover_checksum = item_dict['images'][0]['checksum'] if len(item_dict['images']) > 0 else ''
-        manga.cover_path = item_dict['images'][0]['path'] if len(item_dict['images']) > 0 else ''
-        manga.cover_url = item_dict['images'][0]['url'] if len(item_dict['images']) > 0 else ''
+            manga.cover_checksum = item_dict['images'][0]['checksum'] if len(item_dict['images']) > 0 else ''
+            manga.cover_path = item_dict['images'][0]['path'] if len(item_dict['images']) > 0 else ''
+            manga.cover_url = item_dict['images'][0]['url'] if len(item_dict['images']) > 0 else ''
         
         chapter.manga = manga
         
         # Chapter infos
-        chapter.number = item_dict['chapter_number']
-        chapter.url = item_dict['chapter_url']
-        chapter.date = item_dict['chapter_date']
-        chapter.title = item_dict['chapter_title']
+        if exist_chapter is not None:
+            if item_dict['chapter_url'] not in chapter.url:
+                chapter.url += ';' + item_dict['chapter_url']
+        else:
+            chapter.number = item_dict['chapter_number']
+            chapter.url = item_dict['chapter_url']
+            chapter.date = item_dict['chapter_date']
+            chapter.title = item_dict['chapter_title']
                 
         try:
             session.add(chapter)

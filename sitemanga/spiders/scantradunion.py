@@ -5,7 +5,7 @@ import scrapy
 import dateparser
 
 
-class FuryosquadSpider(scrapy.Spider):
+class ScantradunionSpider(scrapy.Spider):
     name = "scantradunion"
     team_name = "Scantrad Union"
 
@@ -31,9 +31,7 @@ class FuryosquadSpider(scrapy.Spider):
         
         manga_infos['title'] = response.css('.projet-description h2::text').get()
         manga_infos['cover'] = response.css('.projet-image img::attr(src)').get()
-        
-        print(manga_infos)
-                
+                        
         # # Chapters
         chapters_number = response.css('.links-projects li .chapter-number::text').getall()
         chapters_url = response.css('.links-projects li a.btnlel[href*="scantrad-union"]::attr(href)').getall()

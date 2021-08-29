@@ -46,7 +46,7 @@ class FuryosquadSpider(scrapy.Spider):
                 'number': chapters_number[i],
                 'url': chapters_url[i],
                 'title': chapters_title[i],
-                'date': dateparser.parse(chapters_date[i])
+                'date': dateparser.parse(chapters_date[i], languages=['fr'])
             } for i in range(len(chapters_number))]
         
         # Needed if date is similar to put chapters in the right order.

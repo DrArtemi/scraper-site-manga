@@ -41,7 +41,7 @@ class ScantradSpider(scrapy.Spider):
                 'number': ch.css('span.chl-num::text').get().split(' ')[1],
                 'url': urljoin(self.base_url, ch.css('a.hm-link::attr(href)').get()),
                 'title': ch.css('span.chl-titre::text').get(),
-                'date': dateparser.parse(ch.css('div.chl-date::text').get())
+                'date': dateparser.parse(ch.css('div.chl-date::text').get(), languages=['fr'])
             } for ch in chapters]
         # Needed if date is similar to put chapters in the right order.
         equalize_similar_dates(manga_infos['chapters'], threshold=1)

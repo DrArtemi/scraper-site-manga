@@ -4,18 +4,23 @@ import scrapy
 import dateparser
 
 
-class FuryosquadSpider(scrapy.Spider):
-    name = "furyosquad"
+class AsurascansSpider(scrapy.Spider):
+    name = "asurascans"
     
     team = {
-        'name': 'FuryoSquad',
-        'langage': 'fr',
-        'url': 'https://furyosquad.com/'
+        'name': 'Asura Scans',
+        'langage': 'en',
+        'url': 'https://www.asurascans.com/'
     }
+    
+    custom_settings = {
+        'DOWNLOAD_DELAY': 3
+    }
+
 
     def start_requests(self):
         urls = [
-            'https://furyosquad.com/mangas',
+            'https://www.asurascans.com/manga/list-mode',
         ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse_main_page)
@@ -23,39 +28,38 @@ class FuryosquadSpider(scrapy.Spider):
     def parse_main_page(self, response):
         print(f'Parsing mangas list at {response.url}')
         
-        mangas_links = response.css('.fs-comic-title a::attr(href)').getall()
+        mangas_links = response.css('.soralist a.series::attr(href)').getall()
         
         for link in mangas_links:
             yield scrapy.Request(url=link, callback=self.parse_manga)
     
     def parse_manga(self, response):
         print(f'Parsing manga at {response.url}')
+        manga_infos = {}
         
-        # Manga
-        manga_title = response.css('.fs-comic-title::text').get()
-        manga_cover = response.css('.comic-cover::attr(src)').get()
+        manga_title = response.css('h1.entry-title::text').get()
+        manga_cover = response.css('.thumb img::attr(src)').get()
                         
         # Chapters
-        chapters_number = response.css('.fs-chapter-list .element.desktop .title a::text').getall()
-        chapters_url = response.css('.fs-chapter-list .element.desktop .title a::attr(href)').getall()
-        chapters_title = response.css('.fs-chapter-list .element.desktop .name::text').getall()
-        chapters_date = response.css('.fs-chapter-list .element.desktop .meta_r::text').getall()
+        chapters_number = response.css('#chapterlist li .chapternum::text').getall()
+        chapters_url = response.css('#chapterlist li a::attr(href)').getall()
+        chapters_date = response.css('#chapterlist li .chapterdate::text').getall()
         
         for i, ch in enumerate(chapters_number):
             splitted = ch.split(' ')
             chapters_number[i] = float(splitted[1]) if len(splitted) > 1 else float(ch)
-        
-        chapters = [{
+                
+        manga_infos['chapters'] = [{
                 'number': chapters_number[i],
                 'url': chapters_url[i],
-                'title': chapters_title[i],
-                'date': dateparser.parse(chapters_date[i], languages=['fr'])
+                'title': '',
+                'date': dateparser.parse(chapters_date[i], languages=['en'])
             } for i in range(len(chapters_number))]
-        
+                
         # Needed if date is similar to put chapters in the right order.
-        chapters = equalize_similar_dates(chapters, threshold=1)
-        
-        for info in chapters:
+        manga_infos['chapters'] = equalize_similar_dates(manga_infos['chapters'], threshold=1)
+                
+        for i, info in enumerate(manga_infos['chapters']):
             yield ScanItem(
                 # TEAM
                 team_name=self.team['name'],
@@ -71,3 +75,4 @@ class FuryosquadSpider(scrapy.Spider):
                 chapter_date=info['date'],
                 chapter_title=info['title'],
             )
+

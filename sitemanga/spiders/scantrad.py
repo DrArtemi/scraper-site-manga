@@ -1,5 +1,4 @@
 from sitemanga.spiders.utils import equalize_similar_dates
-from sitemanga.items import ChapterItem
 import scrapy
 import dateparser
 from urllib.parse import urljoin

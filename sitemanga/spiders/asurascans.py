@@ -9,7 +9,7 @@ class AsurascansSpider(scrapy.Spider):
     
     team = {
         'name': 'Asura Scans',
-        'langage': 'en',
+        'langage': 'us',
         'url': 'https://www.asurascans.com/'
     }
     

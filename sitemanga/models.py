@@ -36,7 +36,7 @@ class Team(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column('name', String(50), unique=True)
-    langage = Column('team', String(50))
+    langage = Column('langage', String(50))
     url = Column('url', String(150))
     # Has many chapters
     mangas = relationship("Manga",

@@ -1,6 +1,4 @@
 from sitemanga.spiders.utils import equalize_similar_dates
-from time import sleep
-from sitemanga.items import ChapterItem
 import scrapy
 import dateparser
 
@@ -12,7 +10,7 @@ class ScantradunionSpider(scrapy.Spider):
 
     def start_requests(self):
         urls = [
-            'https://scantrad-union.com/projets/',
+            # 'https://scantrad-union.com/projets/',
         ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse_main_page)

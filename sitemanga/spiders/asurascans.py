@@ -34,9 +34,7 @@ class AsurascansSpider(scrapy.Spider):
             yield scrapy.Request(url=link, callback=self.parse_manga)
     
     def parse_manga(self, response):
-        print(f'Parsing manga at {response.url}')
-        manga_infos = {}
-        
+        print(f'Parsing manga at {response.url}')        
         manga_title = response.css('h1.entry-title::text').get()
         manga_cover = response.css('.thumb img::attr(src)').get()
                         
@@ -49,7 +47,7 @@ class AsurascansSpider(scrapy.Spider):
             splitted = ch.split(' ')
             chapters_number[i] = float(splitted[1]) if len(splitted) > 1 else float(ch)
                 
-        manga_infos['chapters'] = [{
+        chapters = [{
                 'number': chapters_number[i],
                 'url': chapters_url[i],
                 'title': '',
@@ -57,9 +55,9 @@ class AsurascansSpider(scrapy.Spider):
             } for i in range(len(chapters_number))]
                 
         # Needed if date is similar to put chapters in the right order.
-        manga_infos['chapters'] = equalize_similar_dates(manga_infos['chapters'], threshold=1)
+        chapters = equalize_similar_dates(chapters, threshold=1)
                 
-        for i, info in enumerate(manga_infos['chapters']):
+        for info in chapters:
             yield ScanItem(
                 # TEAM
                 team_name=self.team['name'],

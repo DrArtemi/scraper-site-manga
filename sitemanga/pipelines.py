@@ -61,9 +61,9 @@ class StorePipeline(object):
             manga.title = item['manga_title']
             manga.url = item['manga_url']
         
-        manga.cover_checksum = item['images'][0]['checksum'] if len(item['images']) > 0 else ''
-        manga.cover_path = item['images'][0]['path'] if len(item['images']) > 0 else ''
-        manga.cover_url = item['images'][0]['url'] if len(item['images']) > 0 else ''
+            manga.cover_checksum = item['images'][0]['checksum'] if len(item['images']) > 0 else ''
+            manga.cover_path = item['images'][0]['path'] if len(item['images']) > 0 else ''
+            manga.cover_url = item['images'][0]['url'] if len(item['images']) > 0 else ''
         manga.teams.append(team)
         
         # CHAPTER

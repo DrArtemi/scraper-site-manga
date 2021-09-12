@@ -52,7 +52,7 @@ class ReaperscansfrSpider(scrapy.Spider):
     def parse_manga(self, response):
         print(f'Parsing manga at {response.url}')        
         manga_title = response.css('.post-title h1::text').get()
-        manga_cover = response.css('.summary_image img::attr(src)').get()
+        manga_cover = response.css('.summary_image img::attr(data-src)').get()
                         
         # Chapters
         chapters_number = response.css('li.wp-manga-chapter a::text').getall()

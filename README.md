@@ -1,4 +1,5 @@
 # scraper-site-manga
+This repository scrap informations from manga teams websites to feed https://fuckjapscan.com/ website.
 
 ## Project setup
 `conda env create -f environment.yml`

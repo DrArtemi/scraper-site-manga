@@ -29,9 +29,7 @@ class LecercleduscanSpider(scrapy.Spider):
             yield scrapy.Request(url=link, callback=self.parse_manga)
     
     def parse_manga(self, response):
-        print(f'Parsing manga at {response.url}')
-        manga_infos = {}
-        
+        print(f'Parsing manga at {response.url}')        
         manga_title = response.css('.zone-page h2::text').get()
         manga_cover = response.css('.zone-page img::attr(src)').get()
                         

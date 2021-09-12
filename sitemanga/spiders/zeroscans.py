@@ -1,26 +1,26 @@
-from sitemanga.spiders.utils import equalize_similar_dates
 from sitemanga.items import ScanItem
+from sitemanga.spiders.utils import equalize_similar_dates
 import scrapy
 import dateparser
+from urllib.parse import urljoin
 
 
-class AsurascansSpider(scrapy.Spider):
-    name = "asurascans"
-    
+class ReaperscansfrSpider(scrapy.Spider):
+    name = "zeroscans"
+
     team = {
-        'name': 'Asura Scans',
+        'name': 'Zero Scans',
         'langage': 'us',
-        'url': 'https://www.asurascans.com/'
-    }
-    
-    custom_settings = {
-        'DOWNLOAD_DELAY': 3
+        'url': 'https://zeroscans.com/'
     }
 
 
     def start_requests(self):
         urls = [
-            'https://www.asurascans.com/manga/list-mode',
+            'https://zeroscans.com/comics?page=1',
+            'https://zeroscans.com/comics?page=2',
+            'https://zeroscans.com/comics?page=3',
+            'https://zeroscans.com/comics?page=4'
         ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse_main_page)
@@ -28,33 +28,31 @@ class AsurascansSpider(scrapy.Spider):
     def parse_main_page(self, response):
         print(f'Parsing mangas list at {response.url}')
         
-        mangas_links = response.css('.soralist a.series::attr(href)').getall()
+        mangas_links = response.css('.list-item .media-comic-card a.media-content::attr(href)').getall()
         
         for link in mangas_links:
             yield scrapy.Request(url=link, callback=self.parse_manga)
     
     def parse_manga(self, response):
-        print(f'Parsing manga at {response.url}')        
-        manga_title = response.css('h1.entry-title::text').get()
-        manga_cover = response.css('.thumb img::attr(src)').get()
+        print(f'Parsing manga at {response.url}')
+        manga_title = response.css('.d-flex .heading h5::text').get().strip()
+        manga_cover = response.css('.media-comic-card a::attr(style)').get()
+        manga_cover = urljoin(self.team["url"], manga_cover.replace('background-image:url(', '').replace(')', ''))
                         
         # Chapters
-        chapters_number = response.css('#chapterlist li .chapternum::text').getall()
-        chapters_url = response.css('#chapterlist li a::attr(href)').getall()
-        chapters_date = response.css('#chapterlist li .chapterdate::text').getall()
-        
-        for i, ch in enumerate(chapters_number):
-            splitted = ch.split(' ')
-            chapters_number[i] = float(splitted[1]) if len(splitted) > 1 else float(ch)
-                
+        chapters_number = response.css('.list .list-item span::text').getall()
+        chapters_url = response.css('.list .list-item a.item-author::attr(href)').getall()
+        chapters_title = response.css('.list .list-item a.item-author::text').getall()
+        chapters_date = response.css('.list .list-item a.item-company::text').getall()
+                                
         chapters = [{
-                'number': chapters_number[i],
+                'number': chapters_number[i].strip(),
                 'url': chapters_url[i],
-                'title': '',
+                'title': chapters_title[i].strip(),
                 'date': dateparser.parse(chapters_date[i], languages=['en'])
             } for i in range(len(chapters_number))]
                 
-        # Needed if date is similar to put chapters in the right order.
+        # # Needed if date is similar to put chapters in the right order.
         chapters = equalize_similar_dates(chapters, threshold=1)
                 
         for info in chapters:
@@ -73,4 +71,3 @@ class AsurascansSpider(scrapy.Spider):
                 chapter_date=info['date'],
                 chapter_title=info['title'],
             )
-

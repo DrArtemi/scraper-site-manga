@@ -1,26 +1,24 @@
-from sitemanga.spiders.utils import equalize_similar_dates
 from sitemanga.items import ScanItem
+from sitemanga.spiders.utils import equalize_similar_dates
 import scrapy
 import dateparser
 
 
-class AsurascansSpider(scrapy.Spider):
-    name = "asurascans"
-    
+class ReaperscansfrSpider(scrapy.Spider):
+    name = "flamescans"
+
     team = {
-        'name': 'Asura Scans',
+        'name': 'Flame Scans',
         'langage': 'us',
-        'url': 'https://www.asurascans.com/'
-    }
-    
-    custom_settings = {
-        'DOWNLOAD_DELAY': 3
+        'url': 'https://flamescans.org/'
     }
 
 
     def start_requests(self):
         urls = [
-            'https://www.asurascans.com/manga/list-mode',
+            'https://flamescans.org/series/?page=1',
+            'https://flamescans.org/series/?page=2',
+            'https://flamescans.org/series/?page=3'
         ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse_main_page)
@@ -28,7 +26,7 @@ class AsurascansSpider(scrapy.Spider):
     def parse_main_page(self, response):
         print(f'Parsing mangas list at {response.url}')
         
-        mangas_links = response.css('.soralist a.series::attr(href)').getall()
+        mangas_links = response.css('.listupd .bs a::attr(href)').getall()
         
         for link in mangas_links:
             yield scrapy.Request(url=link, callback=self.parse_manga)
@@ -45,7 +43,7 @@ class AsurascansSpider(scrapy.Spider):
         
         for i, ch in enumerate(chapters_number):
             splitted = ch.split(' ')
-            chapters_number[i] = float(splitted[1]) if len(splitted) > 1 else float(ch)
+            chapters_number[i] = splitted[1] if len(splitted) > 1 else ch
                 
         chapters = [{
                 'number': chapters_number[i],
@@ -56,7 +54,7 @@ class AsurascansSpider(scrapy.Spider):
                 
         # Needed if date is similar to put chapters in the right order.
         chapters = equalize_similar_dates(chapters, threshold=1)
-                
+        
         for info in chapters:
             yield ScanItem(
                 # TEAM
@@ -73,4 +71,3 @@ class AsurascansSpider(scrapy.Spider):
                 chapter_date=info['date'],
                 chapter_title=info['title'],
             )
-

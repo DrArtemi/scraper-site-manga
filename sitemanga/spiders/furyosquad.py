@@ -10,7 +10,7 @@ class FuryosquadSpider(scrapy.Spider):
     team = {
         'name': 'FuryoSquad',
         'langage': 'fr',
-        'url': 'https://furyosquad.com'
+        'url': 'https://furyosquad.com/'
     }
 
     def start_requests(self):
